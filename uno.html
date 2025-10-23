@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Permainan Kartu Suku Kata Hewan</title>
+    <style>
+      body {
+        font-family: "Comic Sans MS", sans-serif;
+        background-color: #f8f8ff;
+        text-align: center;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #4a148c;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 18px;
+        color: #444;
+      }
+
+      #game-area {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        gap: 30px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+      }
+
+      #cards,
+      #board {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        width: 350px;
+        min-height: 250px;
+      }
+
+      #cards button {
+        margin: 4px;
+        padding: 10px 16px;
+        font-size: 18px;
+        border: none;
+        border-radius: 10px;
+        background-color: #ffe082;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+
+      #cards button:hover {
+        background-color: #ffca28;
+      }
+
+      #current {
+        font-size: 22px;
+        margin-top: 15px;
+        color: #00796b;
+      }
+
+      #score {
+        font-size: 22px;
+        color: #d32f2f;
+        margin-top: 10px;
+      }
+
+      #check {
+        margin-top: 15px;
+        padding: 10px 15px;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        font-size: 18px;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      #check:hover {
+        background-color: #388e3c;
+      }
+
+      #board h3 {
+        margin-bottom: 10px;
+        color: #5d4037;
+      }
+
+      #animal-list {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+      }
+
+      #animal-list li {
+        font-size: 20px;
+        margin: 5px 0;
+      }
+
+      @media (max-width: 700px) {
+        #game-area {
+          flex-direction: column;
+          align-items: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎴 Permainan Kartu Suku Kata Hewan 🐾</h1>
+    <p>
+      Susun suku kata dari <b>ba</b> sampai <b>zo</b> untuk membentuk nama
+      hewan!
+    </p>
+
+    <div id="game-area">
+      <div id="cards">
+        <h3>Pilih Kartu:</h3>
+        <div id="card-buttons"></div>
+        <p id="current">Kata Sekarang: <span id="word"></span></p>
+        <button id="check">Cek Kata 🕵️‍♀️</button>
+        <p id="score">Skor: 0</p>
+      </div>
+
+      <div id="board">
+        <h3>🐕 Hewan yang Kamu Temukan</h3>
+        <ul id="animal-list"></ul>
+      </div>
+    </div>
+
+    <script>
+      // 🔡 Semua suku kata dari ba sampai zo
+      const syllables = [
+        "ba",
+        "bi",
+        "bu",
+        "be",
+        "bo",
+        "ca",
+        "ci",
+        "cu",
+        "ce",
+        "co",
+        "da",
+        "di",
+        "du",
+        "de",
+        "do",
+        "fa",
+        "fi",
+        "fu",
+        "fe",
+        "fo",
+        "ga",
+        "gi",
+        "gu",
+        "ge",
+        "go",
+        "ha",
+        "hi",
+        "hu",
+        "he",
+        "ho",
+        "ja",
+        "ji",
+        "ju",
+        "je",
+        "jo",
+        "ka",
+        "ki",
+        "ku",
+        "ke",
+        "ko",
+        "la",
+        "li",
+        "lu",
+        "le",
+        "lo",
+        "ma",
+        "mi",
+        "mu",
+        "me",
+        "mo",
+        "na",
+        "ni",
+        "nu",
+        "ne",
+        "no",
+        "pa",
+        "pi",
+        "pu",
+        "pe",
+        "po",
+        "qa",
+        "qi",
+        "qu",
+        "qe",
+        "qo",
+        "ra",
+        "ri",
+        "ru",
+        "re",
+        "ro",
+        "sa",
+        "si",
+        "su",
+        "se",
+        "so",
+        "ta",
+        "ti",
+        "tu",
+        "te",
+        "to",
+        "va",
+        "vi",
+        "vu",
+        "ve",
+        "vo",
+        "wa",
+        "wi",
+        "wu",
+        "we",
+        "wo",
+        "xa",
+        "xi",
+        "xu",
+        "xe",
+        "xo",
+        "ya",
+        "yi",
+        "yu",
+        "ye",
+        "yo",
+        "za",
+        "zi",
+        "zu",
+        "ze",
+        "zo",
+      ];
+
+      // 🐾 Daftar nama hewan umum dalam bahasa Indonesia
+      const animals = [
+        "anjing",
+        "ayam",
+        "babi",
+        "bebek",
+        "beruang",
+        "burung",
+        "buaya",
+        "banteng",
+        "belalang",
+        "cacing",
+        "cendrawasih",
+        "cicak",
+        "cupang",
+        "domba",
+        "dugong",
+        "elang",
+        "gajah",
+        "gurita",
+        "gagak",
+        "garuda",
+        "harimau",
+        "hiu",
+        "ikan",
+        "itikan",
+        "jerapah",
+        "kuda",
+        "kucing",
+        "kambing",
+        "kerbau",
+        "kelinci",
+        "katak",
+        "kepiting",
+        "koala",
+        "kupu",
+        "landak",
+        "lebah",
+        "macan",
+        "monyet",
+        "naga",
+        "orangutan",
+        "panda",
+        "paus",
+        "pelikan",
+        "penyu",
+        "puyuh",
+        "rusa",
+        "rubah",
+        "sapi",
+        "serigala",
+        "semut",
+        "siput",
+        "singa",
+        "ular",
+        "udang",
+        "zebra",
+      ];
+
+      let currentWord = "";
+      let score = 0;
+
+      // 🔘 Buat tombol suku kata
+      const cardButtons = document.getElementById("card-buttons");
+      syllables.forEach((syllable) => {
+        const btn = document.createElement("button");
+        btn.textContent = syllable;
+        btn.addEventListener("click", () => {
+          currentWord += syllable;
+          document.getElementById("word").textContent = currentWord;
+        });
+        cardButtons.appendChild(btn);
+      });
+
+      // 🧩 Tombol cek kata
+      document.getElementById("check").addEventListener("click", () => {
+        const word = currentWord.toLowerCase().trim();
+
+        if (animals.includes(word)) {
+          const li = document.createElement("li");
+          li.textContent = word;
+          document.getElementById("animal-list").appendChild(li);
+
+          score++;
+          document.getElementById("score").textContent = "Skor: " + score;
+          alert("🎉 Hebat! Kamu menemukan hewan: " + word);
+        } else {
+          alert("😅 Belum benar, coba lagi!");
+        }
+
+        currentWord = "";
+        document.getElementById("word").textContent = "";
+      });
+    </script>
+  </body>
+</html>
